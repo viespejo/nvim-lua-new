@@ -1,5 +1,6 @@
 local M = {
   "stevearc/aerial.nvim",
+  event = "VeryLazy",
 }
 
 function M.aerial()

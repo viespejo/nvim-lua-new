@@ -1,11 +1,15 @@
 return {
-  enabled = false,
   "nvim-mini/mini.nvim",
+  event = "VeryLazy",
   config = function()
-    require("mini.statusline").setup({ use_icons = true })
-    -- require("mini.diff").setup({
-    --   -- Disabled by default
-    --   source = diff.gen_source.none(),
-    -- })
+    local diff = require("mini.diff")
+    diff.setup({
+      -- Disabled by default
+      source = diff.gen_source.none(),
+    })
+
+    require("mini.surround").setup()
+    require("mini.ai").setup({ n_lines = 500 })
+    require("mini.comment").setup()
   end,
 }

@@ -1,7 +1,7 @@
 return {
   {
     "williamboman/mason.nvim",
-    event = "VeryLazy",
+    event = { "BufReadPost", "BufNewFile" },
     opts = {},
   },
 }

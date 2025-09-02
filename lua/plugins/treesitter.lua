@@ -1,14 +1,15 @@
 return {
   {
-	"nvim-treesitter/nvim-treesitter",
-	dependencies = {
-		{
-			-- "nvim-treesitter/playground",
-			"nvim-treesitter/nvim-treesitter-textobjects",
-		},
-	},
-  config = function()
-    require("nvim-treesitter.configs").setup({
+    "nvim-treesitter/nvim-treesitter",
+    event = "VeryLazy",
+    dependencies = {
+      {
+        -- "nvim-treesitter/playground",
+        "nvim-treesitter/nvim-treesitter-textobjects",
+      },
+    },
+    config = function()
+      require("nvim-treesitter.configs").setup({
         ensure_installed = {
           "astro",
           "c",
@@ -121,6 +122,6 @@ return {
           },
         },
       })
-    end
-  }
+    end,
+  },
 }
