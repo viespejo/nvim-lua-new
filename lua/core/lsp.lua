@@ -5,6 +5,7 @@ vim.diagnostic.config({
 
 vim.lsp.enable({
   "lua_ls",
+  "jsonls",
 })
 
 -- LSP ATTACH

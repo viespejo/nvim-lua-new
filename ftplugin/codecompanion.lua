@@ -1,0 +1,2 @@
+-- set buflisted to true in order copilot to recognize the buffer
+-- vim.bo.buflisted = true

@@ -103,6 +103,8 @@ keymap("v", "<leader>x", ":lua<CR>", opts)
 
 -- i_ctrlx_ctrlf
 keymap("i", "<c-f>", "<c-x><c-f>", { noremap = true })
+keymap("i", "<c-n>", "<c-x><c-n>", { noremap = true })
+keymap("i", "<c-p>", "<c-x><c-p>", { noremap = true })
 
 -- VISUAL
 
