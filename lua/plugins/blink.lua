@@ -11,7 +11,7 @@ return {
 
       require("blink.cmp").setup({
         snippets = { preset = "luasnip" },
-        -- signature = { enabled = true },
+        signature = { enabled = true },
         sources = {
           default = { "lazydev", "lsp", "path", "snippets", "buffer" },
           providers = {
@@ -99,8 +99,8 @@ return {
               scrollbar = false,
               winhighlight = "Normal:BlinkCmpDoc,FloatBorder:BlinkCmpDocBorder,EndOfBuffer:BlinkCmpDoc",
             },
-            auto_show = true,
-            auto_show_delay_ms = 500,
+            -- auto_show = true,
+            -- auto_show_delay_ms = 500,
           },
         },
         fuzzy = {

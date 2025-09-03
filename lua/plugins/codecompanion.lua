@@ -61,10 +61,10 @@ function M.config()
           make_slash_commands = true, -- Add MCP prompts as /slash commands
         },
       },
-      -- mode = {
-      --   enabled = true,
-      --   opts = {},
-      -- },
+      mode = {
+        enabled = true,
+        opts = {},
+      },
       -- rules = {
       -- 	opts = {
       -- 		rules_filenames = {
