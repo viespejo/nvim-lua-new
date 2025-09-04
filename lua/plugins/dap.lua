@@ -4,11 +4,11 @@ return {
   dependencies = {
     {
       { "rcarriga/nvim-dap-ui", dependencies = { "nvim-neotest/nvim-nio" } },
-      "theHamsta/nvim-dap-virtual-text",
+      { "theHamsta/nvim-dap-virtual-text", lazy = true },
       -- golang dap
-      "leoluz/nvim-dap-go",
+      { "leoluz/nvim-dap-go", lazy = true },
       -- python dap
-      "mfussenegger/nvim-dap-python",
+      { "mfussenegger/nvim-dap-python", lazy = true },
     },
   },
   keys = {

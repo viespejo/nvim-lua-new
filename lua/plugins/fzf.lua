@@ -128,6 +128,19 @@ function M.config()
   keymap("n", "<Space>c", ":FzfLua commands<cr>", opts)
   keymap("n", "<Space>G", ":FzfLua grep_cword<cr>", opts)
   keymap("n", "<Space>gg", ":FzfLua live_grep<cr>", opts)
+  keymap("n", "<Space>gG", function()
+    local bufname = vim.api.nvim_buf_get_name(0)
+    if bufname == "" then
+      bufname = vim.loop.cwd() or vim.fn.getcwd()
+    end
+
+    local dir = vim.fn.fnamemodify(bufname, ":h")
+    if vim.api.nvim_win_get_config(0).relative ~= "" then
+      vim.api.nvim_win_close(0, true)
+    end
+
+    require("fzf-lua").live_grep({ cwd = dir })
+  end, opts)
   keymap("n", "<Space>gp", ":FzfLua grep resume=true<cr>", opts)
   keymap("n", "<Space>r", ":FzfLua resume<cr>", opts)
   keymap("n", "<Space>a", "<cmd>call aerial#fzf()<cr>", opts)

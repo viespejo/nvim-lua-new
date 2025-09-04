@@ -8,9 +8,9 @@ return {
       source = diff.gen_source.none(),
     })
 
-    require("mini.ai").setup({ n_lines = 500 })
-    require("mini.surround").setup()
-    require("mini.operator").setup()
     require("mini.comment").setup()
+    require("mini.ai").setup({ n_lines = 500 })
+    -- require("mini.surround").setup()
+    -- require("mini.operators").setup()
   end,
 }

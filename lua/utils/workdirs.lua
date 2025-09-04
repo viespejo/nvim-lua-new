@@ -8,10 +8,15 @@ M.DIRS = {
   "~/.dotfiles-local",
   "~/.config",
   "~/Documents",
+  "~/code",
   "~/code/nvim",
+  "~/code/employeex",
   "~/code/glove80-zmk-config",
   "~/code/nvim/codecompanion.nvim",
   "~/code/nvim/codecompanion-history.nvim",
+  "~/.test-nvim/config/nvim",
+  "~/.test-nvim/local/share/nvim",
+  "~/.test-nvim/local/state/nvim",
 }
 
 M.PREV_CWD = nil

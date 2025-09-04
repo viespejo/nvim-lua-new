@@ -1,6 +1,6 @@
 local M = {
   "stevearc/oil.nvim",
-  event = "VeryLazy",
+  -- event = "VeryLazy",
   dependencies = { "nvim-tree/nvim-web-devicons" },
 }
 
@@ -57,6 +57,7 @@ function M.config()
   })
 
   vim.keymap.set("n", "<leader>o.", oil.open, { desc = "Open parent directory - Oil" })
+  vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
   vim.keymap.set("n", "<leader>oo", function()
     oil.open(vim.fn.getcwd())
   end, { desc = "Open cwd - Oil" })
