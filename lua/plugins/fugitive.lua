@@ -4,6 +4,7 @@ return {
   keys = {
     { "<leader>gs", "<cmd>Git<cr>", desc = "Fugitive" },
     { "<leader>gc", "<cmd>Git commit<cr>", desc = "Fugitive" },
+    { "<leader>gD", "<cmd>Gvdiffsplit!<cr>", desc = "Fugitive Diff Split" },
   },
   config = function()
     local opts = { noremap = true, silent = true, desc = "Fugitive" }

@@ -48,11 +48,28 @@ function M.config()
         desc = "Live grep - Oil",
         callback = livegrep,
       },
+      ["<C-h>"] = false,
+      ["<C-s>"] = { "actions.select", opts = { horizontal = true } },
+      ["<C-v>"] = { "actions.select", opts = { vertical = true } },
+      ["<C-l>"] = false,
+      ["gr"] = "actions.refresh",
+      ["`"] = false,
+      ["cd"] = { "actions.cd", mode = "n" },
+      ["~"] = false,
+      ["ct"] = { "actions.cd", opts = { scope = "tab" }, mode = "n" },
+      ["cw"] = { "actions.cd", opts = { scope = "win" }, mode = "n" },
+      ["gt"] = { "actions.open_terminal", mode = "n" },
+      ["g:"] = { "actions.open_cmdline", mode = "n" },
+      ["H"] = { "actions.toggle_hidden", mode = "n" },
+      ["g."] = false,
+      ["gy"] = { "actions.copy_entry_path", mode = "n" },
+      -- ["y"] = { "actions.copy_entry_filename", mode = "n" },
     },
     view_options = {
       is_always_hidden = function(name)
         return name == ".."
       end,
+      show_hidden = true,
     },
   })
 

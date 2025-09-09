@@ -211,6 +211,11 @@ function M.config()
               },
             },
           },
+          ["image"] = {
+            opts = {
+              dirs = { vim.fn.expand("~/Pictures/") },
+            },
+          },
         },
         roles = {
           ---The header name for the LLM's messages

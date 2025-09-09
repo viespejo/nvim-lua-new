@@ -25,10 +25,26 @@ function M.config()
   require("conform").setup({
     formatters_by_ft = {
       ["lua"] = { "stylua" },
+      ["go"] = { "goimports" },
+      ["javascript"] = { "prettier" },
+      ["javascriptreact"] = { "prettier" },
+      ["typescript"] = { "prettier" },
+      ["typescriptreact"] = { "prettier" },
+      ["html"] = { "prettier" },
       ["json"] = { "jq" },
       ["yaml"] = { "prettier" },
       ["markdown"] = { "prettier" },
+      ["markdown.mdx"] = { "prettier" },
+      -- disabled astro for now because LSP format seems to be faster
+      -- ["astro"] = { "prettier" },
+      -- ["python"] = { "black" }, -- formatting with ruff_lsp
+      ["css"] = { "prettier", "stylelint" },
+      ["scss"] = { "prettier", "stylelint" },
+      ["less"] = { "prettier", "stylelint" },
+      ["sass"] = { "prettier", "stylelint" },
       ["sh"] = { "shfmt", "shellcheck" },
+      -- ["terraform"] = { "terraform_fmt" },
+      -- ["tf"] = { "terraform_fmt" },
     },
     format_on_save = function(bufnr)
       if slow_format_buffers[bufnr] then

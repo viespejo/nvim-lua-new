@@ -1,11 +1,26 @@
 vim.diagnostic.config({
-  virtual_text = true,
   -- virtual_lines = { current_line = true }
+  virtual_text = {
+    spacing = 2,
+    prefix = "●",
+    format = function(diagnostic)
+      return string.format("[%s] %s", diagnostic.source or "LSP", diagnostic.message:gsub("\n", " "))
+    end,
+  },
+  float = {
+    border = "rounded",
+    format = function(diagnostic)
+      return string.format("%s [%s]", diagnostic.message, diagnostic.code or diagnostic.source or "LSP")
+    end,
+  },
 })
 
 vim.lsp.enable({
   "lua_ls",
   "jsonls",
+  "gopls",
+  "vtsls",
+  -- "tsgo",
 })
 
 -- LSP ATTACH
@@ -27,7 +42,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     -- keymaps
     map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<cr>")
     map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>")
-    map("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>")
+    map("n", "K", '<cmd>lua vim.lsp.buf.hover({ border = "rounded" })<cr>')
     map("n", "gI", "<cmd>lua vim.lsp.buf.implementation()<cr>")
     map("n", "gl", "<cmd>lua vim.diagnostic.open_float()<CR>")
     map("n", "<c-s>", "<cmd>lua vim.lsp.buf.signature_help()<cr>")
