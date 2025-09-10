@@ -1,7 +1,6 @@
 return {
   {
     "williamboman/mason.nvim",
-    event = { "BufReadPost", "BufNewFile" },
     opts = {
       ensure_installed = {
         "lua-language-server",

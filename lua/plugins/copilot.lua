@@ -3,27 +3,15 @@ return {
   cmd = "Copilot",
   event = "InsertEnter",
   config = function()
-    local always_attach_filetypes = {
+    local filetypes = {
       markdown = true,
       help = false,
       gitcommit = true,
       gitrebase = false,
-      -- codecompanion = true,
       cvs = false,
       yaml = true,
+      ["."] = false,
     }
-
-    local copilot_should_attach = require("copilot.config.should_attach").default
-
-    local should_attach = function(_, _)
-      if vim.bo.filetype and always_attach_filetypes[vim.bo.filetype] then
-        return true
-      end
-      return copilot_should_attach(_, _)
-    end
-
-    local filetypes = vim.deepcopy(always_attach_filetypes)
-    filetypes["."] = false
 
     require("copilot").setup({
       panel = {
@@ -45,7 +33,6 @@ return {
       },
       filetypes = filetypes,
       copilot_node_command = "node",
-      should_attach = should_attach,
     })
 
     vim.keymap.set(
