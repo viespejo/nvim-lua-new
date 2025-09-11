@@ -7,9 +7,9 @@ return {
     })
   end,
   keys = {
-    { "<c-h>", "<CMD>NavigatorLeft<CR>", mode = { "n" }, desc = "Navigator Left" },
-    { "<c-l>", "<CMD>NavigatorRight<CR>", mode = { "n" }, desc = "Navigator Right" },
-    { "<c-k>", "<CMD>NavigatorUp<CR>", mode = { "n" }, desc = "Navigator Up" },
-    { "<c-j>", "<CMD>NavigatorDown<CR>", mode = { "n" }, desc = "Navigator Down" },
+    { "<c-h>", "<CMD>NavigatorLeft<CR>", mode = { "n", "x" }, desc = "Navigator Left" },
+    { "<c-l>", "<CMD>NavigatorRight<CR>", mode = { "n", "x" }, desc = "Navigator Right" },
+    { "<c-k>", "<CMD>NavigatorUp<CR>", mode = { "n", "x" }, desc = "Navigator Up" },
+    { "<c-j>", "<CMD>NavigatorDown<CR>", mode = { "n", "x" }, desc = "Navigator Down" },
   },
 }
