@@ -4,17 +4,15 @@ return {
   keys = {
     { "<leader>gs", "<cmd>Git<cr>", desc = "Fugitive" },
     { "<leader>gc", "<cmd>Git commit<cr>", desc = "Fugitive" },
+    { "<leader>gd", "<cmd>Gdiffsplit<cr>", desc = "Fugitive Diff" },
+    { "<leader>gb", "<cmd>Git blame<cr>", desc = "Fugitive Blame" },
+    { "<leader>gl", "<cmd>Gclog<cr>", desc = "Fugitive Log" },
     { "<leader>gD", "<cmd>Gvdiffsplit!<cr>", desc = "Fugitive Diff Split" },
   },
   config = function()
     local opts = { noremap = true, silent = true, desc = "Fugitive" }
     local keymap = vim.api.nvim_set_keymap
 
-    -- keymap("n", "<leader>gs", ":Git<cr>", opts)
-    keymap("n", "<leader>gd", ":Gdiffsplit<cr>", opts)
-    keymap("n", "<leader>gc", ":Git commit<cr>", opts)
-    keymap("n", "<leader>gb", ":Git blame<cr>", opts)
-    keymap("n", "<leader>gl", ":Gclog<cr>", opts)
     keymap("n", "<leader>gp", ":Git push<cr>", opts)
     keymap("n", "<leader>gr", ":Gread<cr>:GitGutter<cr>", opts)
     keymap("n", "<leader>gw", ":Gwrite<cr>:GitGutter<cr>", opts)
