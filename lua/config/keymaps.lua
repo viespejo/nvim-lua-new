@@ -14,10 +14,7 @@ local command_opts = { noremap = true }
 -- NORMAL
 
 -- Edit nvim config dir and file
-keymap("n", "<leader>evv", [[:edit <c-r>=stdpath('config')<cr><cr>]], opts)
-keymap("n", "<leader>evi", [[:edit <c-r>=stdpath('config')<cr>/init.lua<cr>]], opts)
-keymap("n", "<leader>evu", [[:edit <c-r>=stdpath('config')<cr>/lua<cr>]], opts)
-keymap("n", "<leader>evw", [[:edit <c-r>=stdpath('config')<cr>/lua/utils/workdirs.lua<cr>]], opts)
+keymap("n", "<leader>ev", [[:Oil <c-r>=stdpath('config')<cr><cr>]], opts)
 
 -- Delete buffer
 keymap("n", "Q", ":bd<cr>", opts)

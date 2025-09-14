@@ -50,3 +50,5 @@ vim.opt.spell = true -- enable spell checking
 
 vim.g.mapleader = ","
 vim.opt.clipboard = "unnamedplus" -- allows neovim to access the system clipboard
+
+vim.o.winborder = "rounded"

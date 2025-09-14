@@ -39,9 +39,9 @@ return {
   flags = {
     debounce_text_changes = 200,
   },
-  handlers = {
-    ["textDocument/publishDiagnostics"] = function() end,
-  },
+  -- handlers = {
+  --   ["textDocument/publishDiagnostics"] = function() end,
+  -- },
   settings = {
     gopls = {
       gofumpt = true,

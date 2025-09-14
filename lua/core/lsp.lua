@@ -31,6 +31,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
       return
     end
 
+    -- If it is copilot, we don't need to set keymaps
+    if client.name == "copilot" then
+      return
+    end
+
     local function map(mode, lhs, rhs, opts)
       local options = { noremap = true, silent = true, buffer = args.buf, desc = "LSP" }
       if opts then
