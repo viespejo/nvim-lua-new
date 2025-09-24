@@ -14,6 +14,7 @@ M.DIRS = {
   "~/code/glove80-zmk-config",
   "~/code/nvim/codecompanion.nvim",
   "~/code/nvim/codecompanion-history.nvim",
+  "~/code/nvim/codecompanion-filewise.nvim",
   "~/.test-nvim/config/nvim",
   "~/.test-nvim/local/share/nvim",
   "~/.test-nvim/local/state/nvim",
