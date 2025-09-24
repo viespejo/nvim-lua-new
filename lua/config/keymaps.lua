@@ -135,7 +135,8 @@ keymap("c", "WQ", "wq", command_opts)
 keymap("c", "cd.", "lcd %:p:h", command_opts)
 
 -- for when you forget to sudo.. Really Write the file.
-keymap("c", "w!!", "w !sudo -S tee % >/dev/null", command_opts)
+-- Wsudo defined in lua/config/commands.lua
+keymap("c", "w!!", "Wsudo", command_opts)
 
 -- helper to edit mode
 keymap("c", "%%", "<c-r>=expand('%:h')<cr>", command_opts)

@@ -15,6 +15,9 @@ vim.diagnostic.config({
   },
 })
 
+-- Keymaps for diagnostics
+vim.keymap.set("n", "gl", "<cmd>lua vim.diagnostic.open_float()<CR>", { desc = "Open diagnostic float" })
+
 vim.lsp.enable({
   "lua_ls",
   "jsonls",
@@ -49,7 +52,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>")
     map("n", "K", '<cmd>lua vim.lsp.buf.hover({ border = "rounded" })<cr>')
     map("n", "gI", "<cmd>lua vim.lsp.buf.implementation()<cr>")
-    map("n", "gl", "<cmd>lua vim.diagnostic.open_float()<CR>")
     map("n", "<c-s>", "<cmd>lua vim.lsp.buf.signature_help()<cr>")
     map("n", "<leader>rn", "<cmd>lua vim.lsp.buf.rename()<cr>")
     map("n", "<leader>qq", "<cmd>lua vim.lsp.buf.references()<cr>")

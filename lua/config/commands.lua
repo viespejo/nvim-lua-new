@@ -44,8 +44,29 @@ local function spell_to_quickfix()
   vim.fn.setqflist(errors)
 end
 
--- Create the custom command to invoke the function
+-- Create the custom command to invoke the function spell_to_quickfix
 vim.api.nvim_create_user_command("SpellCheck", function()
   spell_to_quickfix()
   vim.cmd("copen")
+end, {})
+
+local function sudo_write_with_terminal()
+  if not vim.bo.modifiable then
+    vim.notify("Buffer not modifiable", vim.log.levels.ERROR)
+    return
+  end
+
+  local tmp = vim.fn.tempname()
+  vim.cmd("write! " .. vim.fn.fnameescape(tmp))
+  local target = vim.fn.expand("%:p")
+  -- open a terminal to run sudo mv so the password prompt is interactive
+  vim.api.nvim_command(
+    "botright split | terminal sudo mv " .. vim.fn.shellescape(tmp) .. " " .. vim.fn.shellescape(target)
+  )
+  -- user will input password in terminal; after it's done they can close it
+end
+
+-- Create the custom command to invoke the function sudo_write_with_terminal
+vim.api.nvim_create_user_command("Wsudo", function()
+  sudo_write_with_terminal()
 end, {})

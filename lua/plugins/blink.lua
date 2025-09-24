@@ -47,7 +47,7 @@ return {
           },
           menu = {
             auto_show = false,
-            border = nil,
+            border = "none",
             scrolloff = 1,
             scrollbar = false,
             draw = {
@@ -95,7 +95,7 @@ return {
           },
           documentation = {
             window = {
-              border = nil,
+              -- border = "rounded",
               scrollbar = false,
               winhighlight = "Normal:BlinkCmpDoc,FloatBorder:BlinkCmpDocBorder,EndOfBuffer:BlinkCmpDoc",
             },
