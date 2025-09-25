@@ -88,11 +88,11 @@ function M.config()
         },
       },
       custom_prompts = {
-        enabled = false,
+        enabled = true,
         opts = {
           prompt_dirs = {
             ".github/prompts",
-            (vim.env.XDG_CONFIG_HOME or (vim.env.HOME .. "/.config")) .. "/codecompanion/filewise/prompts",
+            (vim.env.XDG_CONFIG_HOME or (vim.env.HOME .. "/.config")) .. "/codecompanion/prompts",
           },
           prompt_role = "user",
           model_map = {},
