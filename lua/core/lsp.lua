@@ -24,6 +24,7 @@ vim.lsp.enable({
   "gopls",
   "vtsls",
   -- "tsgo",
+  "terraformls",
 })
 
 -- LSP ATTACH

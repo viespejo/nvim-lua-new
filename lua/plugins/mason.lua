@@ -8,6 +8,8 @@ return {
         "typescript-language-server",
         "golangci-lint",
         "js-debug-adapter",
+        "terraformls",
+        "tflint",
       },
     },
   },
