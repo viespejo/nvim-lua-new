@@ -169,6 +169,29 @@ function M.config()
             },
           })
         end,
+        vertex_regional_us_south1 = function()
+          return require("codecompanion.adapters.http").extend("vertex_regional", {
+            name = "vertex_regional_us_south1",
+            formatted_name = "Vertex AI Regional US-South1",
+            env = {
+              project_id = "tww-cx-rnd-prod",
+              region = "us-south1",
+            },
+            schema = {
+              ---@type CodeCompanion.Schema
+              model = {
+                order = 1,
+                mapping = "parameters",
+                type = "enum",
+                desc = "The model that will complete your prompt. See https://ai.google.dev/gemini-api/docs/models/gemini#model-variations for additional details and options.",
+                default = "qwen/qwen3-coder-480b-a35b-instruct-maas",
+                choices = {
+                  ["qwen/qwen3-coder-480b-a35b-instruct-maas"] = { opts = { can_reason = true } },
+                },
+              },
+            },
+          })
+        end,
         gemini = function()
           return require("codecompanion.adapters").extend("gemini", {
             env = {
@@ -272,6 +295,9 @@ function M.config()
               enabled = false,
             },
           },
+        },
+        opts = {
+          undolevels = 100, -- Number of undolevels to use for chat edits
         },
       },
       inline = {
