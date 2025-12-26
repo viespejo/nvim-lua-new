@@ -96,7 +96,7 @@ end
 ---@param bufnr integer Buffer number
 function M.sync_context(bufnr)
   -- Get current chat
-  local chat = require("codecompanion.strategies.chat").buf_get_chat(bufnr)
+  local chat = require("codecompanion.interactions.chat").buf_get_chat(bufnr)
   if not chat then
     return
   end
@@ -138,7 +138,7 @@ function M.sync_context(bufnr)
     end
   end
   -- Finally add files
-  require("codecompanion.strategies.chat.memory").add_to_chat({
+  require("codecompanion.interactions.chat.memory").add_to_chat({
     name = "copilot_custom_instructions",
     opts = {},
     parser = "claude",
@@ -167,7 +167,7 @@ function M.setup(opts)
   end, { desc = "Sync custom instructions to context", nargs = "?" })
 
   -- Keymaps
-  local keymaps = require("codecompanion.config").strategies.chat.keymaps
+  local keymaps = require("codecompanion.config").interactions.chat.keymaps
   keymaps.sync_context = {
     modes = {
       n = M.config.keymaps.sync_context,
@@ -180,7 +180,7 @@ function M.setup(opts)
 
   -- Patch /file slash command to trigger context injection
   if M.config.triggers.slash_file then
-    local ok, slash_file = pcall(require, "codecompanion.strategies.chat.slash_commands.file")
+    local ok, slash_file = pcall(require, "codecompanion.interactions.chat.slash_commands.file")
     if ok and slash_file and slash_file.output then
       local orig_output = slash_file.output
       slash_file.output = function(self, ...)
@@ -201,7 +201,7 @@ function M.setup(opts)
 
   -- Patch /buffer slash command to trigger context injection
   if M.config.triggers.slash_buffer then
-    local ok, slash_buffer = pcall(require, "codecompanion.strategies.chat.slash_commands.buffer")
+    local ok, slash_buffer = pcall(require, "codecompanion.interactions.chat.slash_commands.buffer")
     if ok and slash_buffer and slash_buffer.output then
       local orig_output = slash_buffer.output
       slash_buffer.output = function(self, ...)

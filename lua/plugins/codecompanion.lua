@@ -43,6 +43,8 @@ function M.config()
             adapter = "copilot",
             model = "gpt-4.1",
           },
+          ---Enable detailed logging for history extension
+          -- enable_logging = true,
           ---When chat is cleared with `gx` delete the chat from history
           delete_on_clearing_chat = true,
         },
@@ -63,7 +65,7 @@ function M.config()
         },
       },
       custom_memories = {
-        enabled = true,
+        enabled = false,
         opts = {},
       },
       mode = {
@@ -71,7 +73,7 @@ function M.config()
         opts = {},
       },
       custom_modes = {
-        enabled = true,
+        enabled = false,
         opts = {
           mode_dirs = {
             ".github/chatmodes",
@@ -88,7 +90,7 @@ function M.config()
         },
       },
       custom_prompts = {
-        enabled = true,
+        enabled = false,
         opts = {
           prompt_dirs = {
             ".github/prompts",
@@ -108,36 +110,26 @@ function M.config()
     },
     adapters = {
       http = {
-        anthropic = function()
-          return require("codecompanion.adapters").extend("anthropic", {
-            schema = {
-              extended_thinking = {
-                default = true,
-              },
-            },
-          })
-        end,
+        opts = {
+          show_presets = false,
+          show_model_choices = true,
+        },
+        anthropic = require("codecompanion.adapters.http.anthropic"),
+        openai = require("codecompanion.adapters.http.openai"),
+        openai_responses = require("codecompanion.adapters.http.openai_responses"),
         copilot = function()
           return require("codecompanion.adapters").extend("copilot", {
             schema = {
-              model = {
-                -- default = "claude-3.7-sonnet",
-                -- default = "gemini-2.5-pro",
-                -- default = "claude-sonnet-4",
-                -- default = "gpt-4.1",
-                default = "gpt-5-mini",
-              },
-              -- gpt-5-mini to reasoning_effort "minimal"
               reasoning_effort = {
                 mapping = "parameters",
                 type = "string",
                 optional = true,
-                condition = function(self)
+                enabled = function(self)
                   local model = self.model.name:lower()
                   if type(model) == "function" then
                     model = model()
                   end
-                  if model == "gpt-5-mini" then
+                  if model:find("gpt-5", 1, true) or model:find("gemini-", 1, true) then
                     return true
                   end
                   return false
@@ -161,8 +153,11 @@ function M.config()
             },
           })
         end,
-        vertex_regional = function()
-          return require("codecompanion.adapters.http").extend("vertex_regional", {
+        vertex_regional_us_central1 = function()
+          return require("codecompanion.adapters.http").extend("vertex", {
+            name = "vertex_regional_us_central1",
+            formatted_name = "Vertex AI Regional US-Central1",
+            url = "https://aiplatform.googleapis.com/v1/projects/${project_id}/locations/${region}/endpoints/openapi/chat/completions",
             env = {
               project_id = "tww-cx-rnd-prod",
               region = "us-central1",
@@ -170,7 +165,7 @@ function M.config()
           })
         end,
         vertex_regional_us_south1 = function()
-          return require("codecompanion.adapters.http").extend("vertex_regional", {
+          return require("codecompanion.adapters.http").extend("vertex", {
             name = "vertex_regional_us_south1",
             formatted_name = "Vertex AI Regional US-South1",
             env = {
@@ -178,12 +173,7 @@ function M.config()
               region = "us-south1",
             },
             schema = {
-              ---@type CodeCompanion.Schema
               model = {
-                order = 1,
-                mapping = "parameters",
-                type = "enum",
-                desc = "The model that will complete your prompt. See https://ai.google.dev/gemini-api/docs/models/gemini#model-variations for additional details and options.",
                 default = "qwen/qwen3-coder-480b-a35b-instruct-maas",
                 choices = {
                   ["qwen/qwen3-coder-480b-a35b-instruct-maas"] = { opts = { can_reason = true } },
@@ -201,6 +191,9 @@ function M.config()
         end,
       },
       acp = {
+        opts = {
+          show_presets = false,
+        },
         gemini_cli = function()
           return require("codecompanion.adapters").extend("gemini_cli", {
             commands = {
@@ -226,14 +219,13 @@ function M.config()
         end,
       },
     },
-    strategies = {
+    interactions = {
       chat = {
-        -- adapter = {
-        -- 	name = "copilot",
-        -- 	-- model = "claude-sonnet-4",
-        -- 	model = "gpt-4.1",
-        -- },
-        adapter = "copilot",
+        adapter = {
+          name = "copilot",
+          model = "gpt-5-mini",
+        },
+        -- adapter = "copilot",
         slash_commands = {
           ["buffer"] = {
             opts = {
@@ -308,188 +300,17 @@ function M.config()
         adapter = "copilot",
       },
     },
+    -- PROMPT LIBRARIES ---------------------------------------------------------
     prompt_library = {
-      ["Explain"] = {
-        opts = {
-          auto_submit = false,
-        },
-      },
-      ["Fix code"] = {
-        opts = {
-          auto_submit = false,
-        },
-      },
-      ["Unit Tests"] = {
-        opts = {
-          auto_submit = false,
-        },
-      },
-      ["Generate a Commit Message"] = {
-        opts = {
-          auto_submit = false,
-        },
-      },
-      ["Generate a Commit Message (no staged)"] = {
-        strategy = "chat",
-        description = "Generate a commit message",
-        opts = {
-          index = 10,
-          is_default = true,
-          is_slash_cmd = true,
-          short_name = "commit_no_staged",
-          auto_submit = false,
-        },
-        prompts = {
-          {
-            role = "user",
-            content = function()
-              return fmt(
-                [[You are an expert at following the Conventional Commit specification. Given the git diff listed below, please generate a commit message for me:
-
-```diff
-%s
-```
-]],
-                vim.fn.system("git diff")
-              )
-            end,
-            opts = {
-              contains_code = true,
-            },
-          },
-        },
-      },
-      ["Maths tutor"] = {
-        strategy = "chat",
-        description = "Chat with your personal maths tutor",
-        opts = {
-          index = 12,
-          ignore_system_prompt = true,
-          intro_message = "Welcome to your lesson! How may I help you today? ",
-        },
-        prompts = {
-          {
-            role = "system",
-            content = [[You are a helpful maths tutor.
-You explain concepts, solve problems, and provide step-by-step solutions for maths.
-The user has an MPhys in Physics, is knowledgeable in maths but out of practice, and is an experienced programmer.
-Relate maths concepts to programming where possible.
-
-When responding, use this structure:
-1. Brief explanation of the topic
-2. Definition
-3. Simple example and a more complex example
-4. Programming analogy or Python example
-5. Summary of the topic
-6. Question to check user understanding
-
-You must:
-- Use only H3 headings and above for section separation
-- Show your work and explain each step clearly
-- Relate maths concepts to programming terms where applicable
-- Use Python for coding examples (triple backticks with 'python')
-- Make answers concise for easy transfer to Notion and Anki
-- End with a flashcard-ready summary or question
-
-If the user requests only part of the structure, respond accordingly.]],
-          },
-        },
-      },
-      ["Chain-of-Thought"] = {
-        strategy = "workflow",
-        description = "Use a CoT workflow to plan and write code",
-        opts = {
-          index = 12,
-        },
-        prompts = {
-          {
-            {
-              role = "user",
-              content = [[DO NOT WRITE ANY CODE YET.
-
-Your task is to act as an expert software architect and create a comprehensive implementation plan.
-
-First, think step-by-step. Then, provide a detailed pseudocode plan that outlines the solution.
-
-Your plan should include:
-1.  A high-level summary of the proposed approach.
-2.  A breakdown of the required logic into sequential steps.
-3.  Identification of any new functions, classes, or components that should be created.
-4.  Consideration of how the changes will interact with existing code.
-5.  A list of potential edge cases and error conditions to handle.
-
-<!-- Be sure to share any relevant files -->
-<!-- Your task here -->]],
-              opts = {
-                auto_submit = false,
-              },
-            },
-          },
-          {
-            {
-              role = "user",
-              content = [[Now, act as a senior technical lead reviewing the previous plan. Your goal is to refine it into a final, highly-detailed specification that another AI can implement flawlessly.
-
-Critically evaluate the plan by answering the following questions:
-1.  What are the strengths and weaknesses of the proposed approach?
-2.  Are there any alternative approaches? If so, what are their trade-offs?
-3.  What potential risks, edge cases, or dependencies did the initial plan miss?
-4.  How can the pseudocode be made more specific and closer to the target language's syntax and conventions?
-
-After your analysis, provide a final, revised pseudocode plan. This new plan should incorporate your improvements, be extremely detailed, and leave no room for ambiguity.]],
-              opts = {
-                -- adapter = {
-                --   name = "copilot",
-                --   model = "claude-sonnet-4",
-                -- },
-                auto_submit = true,
-              },
-            },
-          },
-          {
-            {
-              role = "user",
-              content = [[Your task is to write the code based on the final implementation plan that we discussed. Adhere strictly to the plan and do not introduce any new logic.
-
-**Instructions:**
-1.  Implement the plan.
-2.  Generate only the code. Do not include explanations or conversational text.
-3.  Use Markdown code blocks for the code (use 4 backticks instead of 3)
-4.  If you are modifying an existing file, include a comment with its path (e.g., `// filepath: src/utils/helpers.js`).
-5.  Use comments like `// ...existing code...` to indicate where the new code should be placed within existing files.
-
-**IMPORTANT:**
-- Follow the plan exactly.
-- Ensure comments are correct for the programming language.]],
-              opts = {
-                -- adapter = {
-                --   name = "copilot",
-                --   model = "gpt-4.1",
-                -- },
-                auto_submit = true,
-              },
-            },
-          },
+      markdown = {
+        dirs = {
+          vim.fn.getcwd() .. "/.prompts", -- Can be relative
+          vim.fn.stdpath("config") .. "/lua/codecompanion/prompts",
         },
       },
     },
-    -- MEMORY OPTIONS -----------------------------------------------------------
-    memory = {
-      default = {
-        files = {
-          ".clinerules",
-          ".cursorrules",
-          ".goosehints",
-          ".rules",
-          ".windsurfrules",
-          ".github/copilot-instructions.md",
-          "AGENT.md",
-          "AGENTS.md",
-          { path = "CLAUDE.md", parser = "claude" },
-          { path = "CLAUDE.local.md", parser = "claude" },
-          { path = "~/.claude/CLAUDE.md", parser = "claude" },
-        },
-      },
+    -- RULES OPTIONS -----------------------------------------------------------
+    rules = {
       -- SpecKit = {
       --   description = "SpecKit memory files",
       --   parser = "claude",
@@ -514,6 +335,11 @@ After your analysis, provide a final, revised pseudocode plan. This new plan sho
       --     },
       --   },
       -- },
+      opts = {
+        chat = {
+          enabled = false,
+        },
+      },
     },
     display = {
       chat = {
@@ -526,10 +352,17 @@ After your analysis, provide a final, revised pseudocode plan. This new plan sho
       diff = {
         provider = "mini_diff",
       },
+      action_palette = {
+        opts = {
+          show_preset_actions = true,
+          show_preset_prompts = false,
+          show_prompt_library_builtins = true,
+        },
+      },
     },
     -- GENERAL OPTIONS ----------------------------------------------------------
     opts = {
-      log_level = "DEBUG", -- TRACE|DEBUG|ERROR|INFO
+      -- log_level = "DEBUG", -- TRACE|DEBUG|ERROR|INFO
     },
   })
 
