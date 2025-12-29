@@ -201,13 +201,13 @@ function M.config()
                 "gemini",
                 "--experimental-acp",
                 "-m",
-                "gemini-2.5-flash",
+                "gemini-3-flash-preview",
               },
               pro = {
                 "gemini",
                 "--experimental-acp",
                 "-m",
-                "gemini-2.5-pro",
+                "gemini-3-pro-preview",
               },
             },
             defaults = {

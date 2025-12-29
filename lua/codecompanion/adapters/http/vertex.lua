@@ -29,7 +29,7 @@ local M = adapters.extend(gemini, {
 
 M.schema.model.default = "google/gemini-3-flash-preview"
 M.schema.model.choices = {
-  ["google/gemini-2-pro-preview"] = {
+  ["google/gemini-3-pro-preview"] = {
     formatted_name = "Gemini 3 Pro",
     opts = { can_reason = true, has_vision = true },
   },
