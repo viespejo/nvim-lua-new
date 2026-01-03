@@ -146,6 +146,13 @@ function M.config()
             },
           })
         end,
+        gemini_code_assist = function()
+          return require("codecompanion.adapters").extend("gemini-code-assist", {
+            env = {
+              project_id = "tww-cx-rnd-prod",
+            },
+          })
+        end,
         vertex = function()
           return require("codecompanion.adapters").extend("vertex", {
             env = {
@@ -222,8 +229,10 @@ function M.config()
     interactions = {
       chat = {
         adapter = {
-          name = "copilot",
-          model = "gpt-5-mini",
+          -- name = "copilot",
+          -- model = "gpt-5-mini",
+          name = "gemini_code_assist",
+          model = "gemini-3-flash-preview",
         },
         -- adapter = "copilot",
         slash_commands = {
@@ -337,7 +346,7 @@ function M.config()
       -- },
       opts = {
         chat = {
-          enabled = false,
+          enabled = true,
         },
       },
     },
