@@ -146,10 +146,25 @@ function M.config()
             },
           })
         end,
-        gemini_code_assist = function()
+        gemini_code_assist_work = function()
           return require("codecompanion.adapters").extend("gemini-code-assist", {
+            formatted_name = "Gemini Code Assist Work",
+            opts = {
+              profile = "work",
+            },
             env = {
               project_id = "tww-cx-rnd-prod",
+            },
+          })
+        end,
+        gemini_code_assist_personal = function()
+          return require("codecompanion.adapters").extend("gemini-code-assist", {
+            formatted_name = "Gemini Code Assist Personal",
+            opts = {
+              profile = "personal",
+            },
+            env = {
+              -- project_id is not necessary (free tier)
             },
           })
         end,
@@ -231,7 +246,7 @@ function M.config()
         adapter = {
           -- name = "copilot",
           -- model = "gpt-5-mini",
-          name = "gemini_code_assist",
+          name = "gemini_code_assist_work",
           model = "gemini-3-flash-preview",
         },
         -- adapter = "copilot",

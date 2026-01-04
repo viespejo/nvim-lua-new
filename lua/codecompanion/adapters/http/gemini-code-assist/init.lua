@@ -2,35 +2,36 @@ local curl = require("plenary.curl")
 local adapter_utils = require("codecompanion.utils.adapters")
 local log = require("codecompanion.utils.log")
 local auth = require("codecompanion.adapters.http.gemini-code-assist.auth")
+local constants = require("codecompanion.adapters.http.gemini-code-assist.constants")
 local config = require("codecompanion.config")
 
--- =============================================================================
--- CONFIG & AUTH
--- =============================================================================
-local CONFIG = {
-  CLIENT_ID = vim.env.GEMINI_CLIENT_ID or "681255809395-oo8ft2oprdrnp9e3aqf6av3hmdib135j.apps.googleusercontent.com",
-  CLIENT_SECRET = vim.env.GEMINI_CLIENT_SECRET or "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",
-  TOKEN_URL = "https://oauth2.googleapis.com/token",
-  API_BASE_URL = "https://cloudcode-pa.googleapis.com/v1internal",
-}
-
 -- create command to force login if needed
-vim.api.nvim_create_user_command("CodeCompanionGeminiAuth", function()
-  auth.authenticate()
-end, {})
+vim.api.nvim_create_user_command("CodeCompanionGeminiAuth", function(opts)
+  local profile = opts.args
+  local token_file = constants.get_token_path(profile)
+  -- Clear cached project ID to force re-discovery if user re-authenticates
+  auth.save_project_id(token_file, nil)
+  auth.authenticate(token_file)
+end, {
+  nargs = "?",
+  desc = "Authenticate with Gemini Code Assist. Optional: profile name",
+})
 
-local token_cache = { access_token = nil, expires_at = 0 }
+local token_cache = {}
 
 ---Get a fresh access token
+---@param token_file string
 ---@return string|nil
-local function get_fresh_token()
-  -- 1. Check memory cache
-  if token_cache.access_token and os.time() < (token_cache.expires_at - 120) then
-    return token_cache.access_token
+local function get_fresh_token(token_file)
+  -- check memory cache
+  local cache = token_cache[token_file] or { access_token = nil, expires_at = 0 }
+
+  if cache.access_token and os.time() < (cache.expires_at - 120) then
+    return cache.access_token
   end
 
-  -- 2. Check disk (via Auth module)
-  local refresh_token = auth.load_token()
+  -- check disk (via Auth module)
+  local refresh_token, _ = auth.load_token(token_file)
 
   if not refresh_token then
     -- we do NOT trigger auth here
@@ -40,12 +41,12 @@ local function get_fresh_token()
   end
 
   log:trace("Gemini Code Assist: Refreshing access token...")
-  local ok, response = pcall(curl.post, CONFIG.TOKEN_URL, {
+  local ok, response = pcall(curl.post, constants.TOKEN_URL, {
     insecure = config.adapters.http.opts.allow_insecure,
     proxy = config.adapters.http.opts.proxy,
     body = {
-      client_id = CONFIG.CLIENT_ID,
-      client_secret = CONFIG.CLIENT_SECRET,
+      client_id = constants.CLIENT_ID,
+      client_secret = constants.CLIENT_SECRET,
       refresh_token = refresh_token,
       grant_type = "refresh_token",
     },
@@ -60,8 +61,10 @@ local function get_fresh_token()
   if response.status == 200 then
     local decode_ok, data = pcall(vim.json.decode, response.body)
     if decode_ok and data and data.access_token then
-      token_cache.access_token = data.access_token
-      token_cache.expires_at = os.time() + (data.expires_in or 3599)
+      token_cache[token_file] = {
+        access_token = data.access_token,
+        expires_at = os.time() + (data.access_token_expires_in or data.expires_in or 3599),
+      }
       log:trace("Gemini Code Assist: Token refreshed successfully")
       return data.access_token
     else
@@ -283,46 +286,64 @@ return {
     text = true,
     tokens = true,
   },
-  url = CONFIG.API_BASE_URL,
+  url = constants.API_BASE_URL,
   env = {
-    project_id = "YOUR_PROJECT_ID", -- replace in config
-    access_token = "", -- Not used directly - placeholder
+    project_id = "GEMINI_CODE_ASSIST_PROJECT_ID",
+    access_token = "", -- don't set here, handled in lifecycle setup and used in headers interpolation
   },
-  headers = {
+  headers = vim.tbl_extend("force", constants.HEADERS, {
     ["Authorization"] = "Bearer ${access_token}",
     ["Content-Type"] = "application/json",
-    ["X-Goog-Api-Client"] = "gl-node/22.17.0",
-    ["Client-Metadata"] = "ideType=IDE_UNSPECIFIED,platform=PLATFORM_UNSPECIFIED,pluginType=GEMINI",
-  },
+  }),
 
   handlers = {
     resolve = function(self)
-      local refresh_token = auth.load_token()
+      local token_file = constants.get_token_path(self.opts.profile)
+      local refresh_token = auth.load_token(token_file)
       if not refresh_token then
         vim.schedule(function()
-          auth.authenticate()
+          auth.authenticate(token_file)
         end)
       end
     end,
     lifecycle = {
       setup = function(self)
-        if not self.env.project_id or self.env.project_id == "YOUR_PROJECT_ID" then
-          log:error("Gemini Code Assist: project_id is missing in env")
-          return false
-        end
+        local token_file = constants.get_token_path(self.opts.profile)
 
         -- get fresh token
-        self.env.access_token = get_fresh_token()
+        self.env.access_token = get_fresh_token(token_file)
         if not self.env.access_token then
           return false
         end
 
+        -- project_id Logic: Config > Cache > Provision
+        if
+          self.env.project_id == "GEMINI_CODE_ASSIST_PROJECT_ID" and not os.getenv("GEMINI_CODE_ASSIST_PROJECT_ID")
+        then
+          local _, cached_id = auth.load_token(token_file)
+          if cached_id then
+            self.env.project_id = cached_id
+          else
+            log:info("Gemini: Resolving managed project...")
+            local managed_id = auth.resolve_managed_project(self.env.access_token)
+            if managed_id then
+              self.env.project_id = managed_id
+              auth.save_project_id(token_file, managed_id)
+            else
+              log:error(
+                "Gemini: Could not resolve Project ID. Ensure 'Gemini for Google Cloud API' is enabled at https://console.cloud.google.com/apis/library/cloudaicompanion.googleapis.com"
+              )
+              return false
+            end
+          end
+        end
+
         -- set endpoint based on streaming or not
         if self.opts and self.opts.stream then
-          self.url = CONFIG.API_BASE_URL .. ":streamGenerateContent?alt=sse"
+          self.url = constants.API_BASE_URL .. ":streamGenerateContent?alt=sse"
           self.headers["Accept"] = "text/event-stream"
         else
-          self.url = CONFIG.API_BASE_URL .. ":generateContent"
+          self.url = constants.API_BASE_URL .. ":generateContent"
         end
 
         local model_opts = resolve_model_opts(self)
@@ -396,7 +417,7 @@ return {
         end
 
         return {
-          project = self.env.project_id,
+          project = self.env_replaced.project_id,
           model = model,
           request = {
             contents = contents,

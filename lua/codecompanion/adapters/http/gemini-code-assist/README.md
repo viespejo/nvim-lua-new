@@ -1,15 +1,16 @@
 ## Gemini Code Assist Adapter for CodeCompanion
 
-This adapter allows you to connect to Google's Gemini Code Assist API using the same infrastructure as the Gemini CLI and VS Code extensions. It includes an automated OAuth2 authentication flow and supports advanced features like Reasoning (Thinking) and Tool Use.
+This adapter connects to Google's Gemini Code Assist API (the internal API used by Gemini CLI and VS Code). It features an automated OAuth2 flow, automated project provisioning (Zero Config), and support for multiple Google accounts via profiles.
 
 ## File Structure
 
-Create a folder named `gemini-code-assist` inside your CodeCompanion adapters directory:
+Create a directory named `gemini-code-assist` inside your CodeCompanion adapters path:
 
 ```text
 lua/codecompanion/adapters/http/gemini-code-assist/
-├── init.lua   (The adapter definition)
-└── auth.lua   (The OAuth2 manager)
+├── init.lua       (Adapter definition)
+├── auth.lua       (OAuth2 manager)
+└── constants.lua  (Shared configuration)
 ```
 
 ## Installation
@@ -19,46 +20,68 @@ lua/codecompanion/adapters/http/gemini-code-assist/
 
 ## Configuration
 
-Add the adapter to your `codecompanion.lua` configuration file. You must provide your Google Cloud **Project ID**:
+### Environment Variables
+The adapter can automatically resolve configuration from your system environment:
+- `GEMINI_CODE_ASSIST_PROJECT_ID`: Your Google Cloud Project ID.
+
+### Basic Setup (Zero Config)
+If you don't provide a `project_id`, the adapter will automatically attempt to provision a "Free Tier" managed project for your Google account.
 
 ```lua
 require("codecompanion").setup({
   adapters = {
     gemini_code_assist = function()
-      return require("codecompanion.adapters").extend("gemini-code-assist", {
-        env = {
-          project_id = "your-gcp-project-id", -- Replace with your actual GCP project ID
-        },
-      })
+      return require("codecompanion.adapters").extend("gemini-code-assist")
     end,
   },
   interactions = {
     chat = { adapter = "gemini_code_assist" },
-    inline = { adapter = "gemini_code_assist" },
+  },
+})
+```
+
+### Multi-Account Support (Profiles)
+You can use multiple Google accounts by defining different profiles. Each profile maintains its own separate token file.
+
+```lua
+require("codecompanion").setup({
+  adapters = {
+    gemini_personal = function()
+      return require("codecompanion.adapters").extend("gemini-code-assist", {
+        opts = { profile = "personal" }
+      })
+    end,
+    gemini_work = function()
+      return require("codecompanion.adapters").extend("gemini-code-assist", {
+        opts = { profile = "work" },
+        env = {
+          project_id = "my-corporate-project-id", -- Optional: force a specific project
+        }
+      })
+    end,
   },
 })
 ```
 
 ## Authentication Flow
 
-The adapter handles authentication automatically using a local loopback server:
-
-1. **Automatic Activation**: The first time you open a CodeCompanion chat or use the adapter, it will detect that no token is present.
-2. **Browser Prompt**: A notification will appear, and your default browser will open a Google login page.
-3. **Authorization**: Log in with your Google account and grant the necessary permissions.
-4. **Token Storage**: Once authorized, the browser will show "Authentication Successful". The tokens are securely saved to `~/.local/share/nvim/gemini_code_assist_token.json` (or equivalent on your OS - see your `stdpath("data")`).
-5. **Manual Trigger**: You can re-authenticate at any time by running the command:
-   `:CodeCompanionGeminiAuth`
+1.  **Automatic**: When you start a chat, the adapter checks for a valid token. If missing, it notifies you and opens your browser.
+2.  **Loopback Server**: A temporary local server captures the authorization code automatically.
+3.  **Manual Trigger**: You can re-authenticate or log in to a specific profile at any time using:
+    *   `:CodeCompanionGeminiAuth` (default profile)
+    *   `:CodeCompanionGeminiAuth work` (specific profile)
 
 ## Key Features
 
-- **Reasoning/Thinking**: Supports Gemini 3 models with `reasoning_effort` (high, medium, low) and `include_thoughts` options.
-- **Vision**: Automatically detects if the selected model supports image inputs.
-- **Tools**: Fully compatible with CodeCompanion's tool ecosystem (Agents).
-- **Persistent Session**: The refresh token lasts for a long duration, so you won't need to log in frequently.
+- **Zero Config**: Automatically provisions a free managed project if `project_id` is omitted.
+- **Multi-Profile**: Support for multiple Google accounts via the `opts.profile` setting.
+- **Reasoning/Thinking**: Supports Gemini 3 "Thinking" models with `reasoning_effort` and `include_thoughts`.
+- **Vision**: Automatic detection of image support based on the selected model.
+- **Tools**: Fully compatible with CodeCompanion's Agents and Tools ecosystem.
 
 ## Troubleshooting
 
-- **Project ID**: Ensure your GCP Project ID has the "Gemini for Google Cloud API" enabled.
+- **Project Errors**: If automated provisioning fails, ensure the "Gemini for Google Cloud API" is enabled in your [GCP Console](https://console.cloud.google.com/apis/library/cloudaicompanion.googleapis.com).
 - **Port Conflicts**: The adapter uses a random free port for the authentication callback. If you are behind a strict firewall, ensure local loopback connections are allowed.
-- **Logs**: You can check the logs using `:CodeCompanionLog` if the authentication fails to exchange the code.
+- **Logs**: Use `:CodeCompanionLog` to view detailed request/response data if authentication fails.
+- **Token Location**: Tokens are stored in `stdpath("data")` as `gemini_code_assist_token_[profile].json`.
