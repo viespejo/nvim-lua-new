@@ -21,6 +21,7 @@ local M = {
       end,
     },
     { "dyamon/codecompanion-filewise.nvim", dev = true }, -- File-wise context, instructions, modes, and prompts
+    { "viespejo/cc-adapter-gemini-code-assist.nvim", dev = true }, -- Gemini Code Assist adapter
   },
   cmd = "CodeCompanionChat",
   keys = {
