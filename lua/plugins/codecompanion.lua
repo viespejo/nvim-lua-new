@@ -171,6 +171,9 @@ function M.config()
         end,
         vertex = function()
           return require("codecompanion.adapters").extend("vertex", {
+            -- features = {
+            --   show_reasoning = true,
+            -- },
             env = {
               project_id = "tww-cx-rnd-prod",
             },
@@ -199,7 +202,10 @@ function M.config()
               model = {
                 default = "qwen/qwen3-coder-480b-a35b-instruct-maas",
                 choices = {
-                  ["qwen/qwen3-coder-480b-a35b-instruct-maas"] = { opts = { can_reason = true } },
+                  ["qwen/qwen3-coder-480b-a35b-instruct-maas"] = {
+                    formatted_name = "Qwen3 Coder 480b a35b",
+                    opts = { can_reason = true },
+                  },
                 },
               },
             },
