@@ -33,17 +33,17 @@ local M = {
 }
 
 function M.config()
-  local fmt = string.format
   require("codecompanion").setup({
     extensions = {
       history = {
         enabled = true,
         opts = {
           picker = "fzf-lua",
-          title_generation_opts = {
-            adapter = "copilot",
-            model = "gpt-4.1",
-          },
+          auto_generate_title = false,
+          -- title_generation_opts = {
+          --   adapter = "copilot",
+          --   model = "gpt-4.1",
+          -- },
           ---Enable detailed logging for history extension
           -- enable_logging = true,
           ---When chat is cleared with `gx` delete the chat from history
@@ -114,6 +114,10 @@ function M.config()
         opts = {
           show_presets = false,
           show_model_choices = true,
+          -- mitmproxy settings
+          -- mitmproxy --set listen_port=4141
+          -- allow_insecure = true,
+          -- proxy = "http://127.0.0.1:4141",
         },
         anthropic = require("codecompanion.adapters.http.anthropic"),
         openai = require("codecompanion.adapters.http.openai"),
@@ -121,6 +125,9 @@ function M.config()
         copilot = function()
           return require("codecompanion.adapters").extend("copilot", {
             schema = {
+              model = {
+                default = "gpt-5-mini",
+              },
               reasoning_effort = {
                 mapping = "parameters",
                 type = "string",
@@ -249,10 +256,30 @@ function M.config()
       },
     },
     interactions = {
+      -- BACKGROUND INTERACTION -------------------------------------------------
+      background = {
+        adapter = {
+          name = "copilot",
+          model = "gpt-4.1",
+        },
+        -- Callbacks within the plugin that you can attach background actions to
+        chat = {
+          callbacks = {
+            -- title generation on ready
+            ["on_ready"] = {
+              actions = {
+                "interactions.background.builtin.chat_make_title",
+              },
+              enabled = true,
+            },
+          },
+          opts = {
+            enabled = true, -- Enable ALL background chat interactions?
+          },
+        },
+      },
       chat = {
         adapter = {
-          -- name = "copilot",
-          -- model = "gpt-5-mini",
           name = "gemini_code_assist_work",
           model = "gemini-3-flash-preview",
         },
@@ -393,7 +420,7 @@ function M.config()
     },
     -- GENERAL OPTIONS ----------------------------------------------------------
     opts = {
-      -- log_level = "DEBUG", -- TRACE|DEBUG|ERROR|INFO
+      log_level = "ERROR", -- TRACE|DEBUG|ERROR|INFO
     },
   })
 
