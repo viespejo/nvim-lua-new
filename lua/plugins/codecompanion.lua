@@ -33,6 +33,9 @@ local M = {
 }
 
 function M.config()
+  local cc_config = require("codecompanion.config")
+  local original_resolve_input = cc_config.interactions.chat.opts.resolve_input
+
   require("codecompanion").setup({
     extensions = {
       history = {
@@ -348,6 +351,51 @@ function M.config()
         },
         opts = {
           undolevels = 100, -- Number of undolevels to use for chat edits
+          --- Function to resolve user input from vim.ui.input into the messages
+          ---
+          --- Processes user input to replace placeholders ($ARGUMENTS, $1, $2, etc.)
+          --- or appends a new message if no placeholders are found.
+          ---
+          --- @param messages table List of message objects {role: string, content: string}
+          --- @param input string|nil The raw string retrieved from vim.ui.input
+          --- @return nil
+          resolve_input = function(messages, input)
+            if not input or input == "" then
+              return
+            end
+
+            -- positional arguments
+            local args = {}
+            for word in input:gmatch("%S+") do
+              table.insert(args, word)
+            end
+
+            -- replacements map
+            local replacements = {
+              ["%$ARGUMENTS"] = input, -- Represents the full plural string
+            }
+            for i, val in ipairs(args) do
+              replacements["%$" .. i] = val
+            end
+
+            local replaced_any = false
+
+            -- iterate through existing messages to perform string substitution
+            for _, message in ipairs(messages) do
+              for pattern, replacement in pairs(replacements) do
+                local new_content, n = message.content:gsub(pattern, replacement)
+                if n > 0 then
+                  message.content = new_content
+                  replaced_any = true
+                end
+              end
+            end
+
+            -- if no placeholders were detected, fall back to default behavior
+            if not replaced_any then
+              original_resolve_input(messages, input)
+            end
+          end,
         },
       },
       inline = {
