@@ -98,6 +98,4 @@ dependencies:
 
 ## user
 
-Only if you need to load and read files to fulfill user requests, use the @{read_file} tool.
-
 *help

@@ -25,6 +25,7 @@ vim.lsp.enable({
   "vtsls",
   -- "tsgo",
   "terraformls",
+  "tailwindcss",
 })
 
 -- LSP ATTACH

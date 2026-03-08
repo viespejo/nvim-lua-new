@@ -72,9 +72,14 @@ function M.config()
         hidden = "hidden",
       },
     },
-    -- files = {
-    -- 	previewer = false,
-    -- },
+    files = {
+      -- previewer = false,
+    },
+    actions = {
+      files = {
+        ["enter"] = FzfLua.actions.file_edit,
+      },
+    },
     fzf_colors = function()
       return {
         -- ["fg"] = { "fg", "Normal" },

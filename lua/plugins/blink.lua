@@ -28,12 +28,14 @@ return {
         keymap = {
           ["<C-space>"] = {},
           ["<C-_>"] = { "show", "show_documentation", "hide_documentation" },
+          ["<C-/>"] = { "show", "show_documentation", "hide_documentation" },
         },
         cmdline = {
           keymap = {
             preset = "default",
             ["<C-space>"] = {},
             ["<C-_>"] = { "show", "show_documentation", "hide_documentation" },
+            ["<C-/>"] = { "show", "show_documentation", "hide_documentation" },
             ["<CR>"] = { "accept_and_enter", "fallback" },
           },
           -- completion = { menu = { auto_show = true } },

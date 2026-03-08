@@ -22,6 +22,8 @@ local M = {
     },
     { "dyamon/codecompanion-filewise.nvim", dev = true }, -- File-wise context, instructions, modes, and prompts
     { "viespejo/cc-adapter-gemini-code-assist.nvim", dev = true }, -- Gemini Code Assist adapter
+    { "viespejo/cc-adapter-vertex-ai.nvim", dev = true }, -- Vertex AI adapter
+    { "viespejo/cc-adapter-codex.nvim", dev = true }, -- Codex adapter
   },
   cmd = "CodeCompanionChat",
   keys = {
@@ -123,8 +125,52 @@ function M.config()
           -- proxy = "http://127.0.0.1:4141",
         },
         anthropic = require("codecompanion.adapters.http.anthropic"),
-        openai = require("codecompanion.adapters.http.openai"),
-        openai_responses = require("codecompanion.adapters.http.openai_responses"),
+        openai = function()
+          local adapter = require("codecompanion.adapters.http.openai_responses")
+          adapter.schema.model.choices = {
+            ["gpt-5.4"] = {
+              formatted_name = "GPT-5.4",
+              opts = {
+                has_function_calling = true,
+                has_vision = true,
+                can_reason = true,
+              },
+            },
+            ["gpt-5.3-codex"] = {
+              formatted_name = "GPT-5.3 Codex",
+              opts = {
+                has_function_calling = true,
+                has_vision = true,
+                can_reason = true,
+              },
+            },
+            ["gpt-5.1-codex-mini"] = {
+              formatted_name = "GPT-5.1 Codex Mini",
+              opts = {
+                has_function_calling = true,
+                can_reason = true,
+              },
+            },
+            ["gpt-5-mini"] = {
+              formatted_name = "GPT-5 Mini",
+              opts = {},
+            },
+          }
+          adapter.schema.model.default = "gpt-5.1-codex-mini"
+          adapter.schema.top_p.enabled = function(self)
+            local model = self.schema.model.default
+            if type(model) == "function" then
+              model = model()
+            end
+            vim.print("Checking if top_p should be enabled for model: " .. model)
+            vim.print("It is gpt-5.4: " .. tostring(model:find("gpt%-5.4") and true or false))
+            if model:find("gpt%-5.4") then
+              return false
+            end
+            return true
+          end
+          return adapter
+        end,
         copilot = function()
           return require("codecompanion.adapters").extend("copilot", {
             schema = {
@@ -179,45 +225,49 @@ function M.config()
             },
           })
         end,
-        vertex = function()
-          return require("codecompanion.adapters").extend("vertex", {
-            -- features = {
-            --   show_reasoning = true,
-            -- },
+        vertex_gemini = function()
+          return require("codecompanion.adapters").extend("vertex-gemini", {
+            formatted_name = "Vertex AI Gemini",
             env = {
               project_id = "tww-cx-rnd-prod",
             },
           })
         end,
-        vertex_regional_us_central1 = function()
-          return require("codecompanion.adapters.http").extend("vertex", {
-            name = "vertex_regional_us_central1",
-            formatted_name = "Vertex AI Regional US-Central1",
-            url = "https://aiplatform.googleapis.com/v1/projects/${project_id}/locations/${region}/endpoints/openapi/chat/completions",
+        vertex_anthropic = function()
+          return require("codecompanion.adapters").extend("vertex-anthropic", {
+            formatted_name = "Vertex AI Anthropic",
+            env = {
+              project_id = "tww-cx-rnd-prod",
+            },
+          })
+        end,
+        vertex_maas = function()
+          return require("codecompanion.adapters").extend("vertex-maas", {
+            formatted_name = "Vertex AI MAAS Global",
+            features = {
+              show_reasoning = true,
+            },
+            env = {
+              project_id = "tww-cx-rnd-prod",
+            },
+          })
+        end,
+        vertex_maas_us_central1 = function()
+          return require("codecompanion.adapters").extend("vertex-maas", {
+            features = {
+              show_reasoning = true,
+            },
+            formatted_name = "Vertex AI MAAS US-Central1",
             env = {
               project_id = "tww-cx-rnd-prod",
               region = "us-central1",
             },
           })
         end,
-        vertex_regional_us_south1 = function()
-          return require("codecompanion.adapters.http").extend("vertex", {
-            name = "vertex_regional_us_south1",
-            formatted_name = "Vertex AI Regional US-South1",
-            env = {
-              project_id = "tww-cx-rnd-prod",
-              region = "us-south1",
-            },
-            schema = {
-              model = {
-                default = "qwen/qwen3-coder-480b-a35b-instruct-maas",
-                choices = {
-                  ["qwen/qwen3-coder-480b-a35b-instruct-maas"] = {
-                    formatted_name = "Qwen3 Coder 480b a35b",
-                    opts = { can_reason = true },
-                  },
-                },
-              },
+        codex = function()
+          return require("codecompanion.adapters").extend("codex", {
+            opts = {
+              profile = "personal",
             },
           })
         end,
@@ -311,6 +361,13 @@ function M.config()
           ["image"] = {
             opts = {
               dirs = { vim.fn.expand("~/Pictures/") },
+            },
+          },
+          ["terminal"] = {
+            callback = "slash_commands.terminal",
+            description = "Insert terminal output",
+            opts = {
+              contains_code = false,
             },
           },
         },
@@ -469,6 +526,7 @@ function M.config()
     -- GENERAL OPTIONS ----------------------------------------------------------
     opts = {
       log_level = "ERROR", -- TRACE|DEBUG|ERROR|INFO
+      -- log_level = "TRACE",
     },
   })
 
