@@ -346,6 +346,25 @@ function M.config()
           name = "gemini_code_assist_work",
           model = "gemini-3-flash-preview",
         },
+        -- keymaps: for chat buffers, you can bind keys to interact with the current chat and its adapter
+        keymaps = {
+          copilot_stats = {
+            modes = { n = "gS" },
+            description = "[Adapter] Usage statistics",
+            callback = function(chat)
+              if not chat or not chat.adapter then
+                return
+              end
+
+              local fn = chat.adapter.show_stats or chat.adapter.show_copilot_stats
+              if type(fn) == "function" then
+                return fn(chat.adapter)
+              end
+
+              vim.notify("Stats are not available for this adapter", vim.log.levels.WARN)
+            end,
+          },
+        },
         -- adapter = "copilot",
         slash_commands = {
           ["buffer"] = {
