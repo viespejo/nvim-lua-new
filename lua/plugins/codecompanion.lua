@@ -21,6 +21,7 @@ local M = {
       end,
     },
     { "dyamon/codecompanion-filewise.nvim", dev = true }, -- File-wise context, instructions, modes, and prompts
+    { "cairijun/codecompanion-agentskills.nvim", dev = true }, -- Agent skills extension
     { "viespejo/cc-adapter-gemini-code-assist.nvim", dev = true }, -- Gemini Code Assist adapter
     { "viespejo/cc-adapter-vertex-ai.nvim", dev = true }, -- Vertex AI adapter
     { "viespejo/cc-adapter-codex.nvim", dev = true }, -- Codex adapter
@@ -68,6 +69,15 @@ function M.config()
           make_vars = true, -- Convert MCP resources to #variables for prompts
           -- MCP Prompts
           make_slash_commands = true, -- Add MCP prompts as /slash commands
+        },
+      },
+      agentskills = {
+        opts = {
+          paths = {
+            ".cc/skills",
+            -- { "~/.config/nvim/skills", recursive = true }, -- Recursive search
+          },
+          external_allowlist = { "_bmad" },
         },
       },
       custom_memories = {
@@ -323,7 +333,7 @@ function M.config()
               actions = {
                 "interactions.background.builtin.chat_make_title",
               },
-              enabled = true,
+              enabled = false,
             },
           },
           opts = {

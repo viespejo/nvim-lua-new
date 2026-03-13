@@ -77,6 +77,7 @@ function M.config()
     },
     actions = {
       files = {
+        true,
         ["enter"] = FzfLua.actions.file_edit,
       },
     },
