@@ -20,8 +20,8 @@ local M = {
         })
       end,
     },
-    { "dyamon/codecompanion-filewise.nvim", dev = true }, -- File-wise context, instructions, modes, and prompts
-    { "cairijun/codecompanion-agentskills.nvim", dev = true }, -- Agent skills extension
+    -- { "dyamon/codecompanion-filewise.nvim", dev = true }, -- File-wise context, instructions, modes, and prompts
+    -- { "cairijun/codecompanion-agentskills.nvim", dev = true }, -- Agent skills extension
     { "viespejo/cc-adapter-gemini-code-assist.nvim", dev = true }, -- Gemini Code Assist adapter
     { "viespejo/cc-adapter-vertex-ai.nvim", dev = true }, -- Vertex AI adapter
     { "viespejo/cc-adapter-codex.nvim", dev = true }, -- Codex adapter
@@ -72,12 +72,13 @@ function M.config()
         },
       },
       agentskills = {
+        enabled = false,
         opts = {
           paths = {
-            ".cc/skills",
+            ".codecompanion/skills",
             -- { "~/.config/nvim/skills", recursive = true }, -- Recursive search
           },
-          external_allowlist = { "_bmad" },
+          external_allowlist = { "_bmad", "docs" },
         },
       },
       custom_memories = {
@@ -496,7 +497,7 @@ function M.config()
     prompt_library = {
       markdown = {
         dirs = {
-          vim.fn.getcwd() .. "/.prompts", -- Can be relative
+          vim.fn.getcwd() .. "/.codecompanion/prompts", -- Can be relative
           vim.fn.stdpath("config") .. "/lua/codecompanion/prompts",
         },
       },
