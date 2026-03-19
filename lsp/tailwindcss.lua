@@ -54,15 +54,15 @@ return {
     -- 'stylus',
     -- 'sugarss',
     -- js
-    "javascript",
+    -- "javascript",
     "javascriptreact",
     "reason",
     "rescript",
-    "typescript",
+    -- "typescript",
     "typescriptreact",
     -- mixed
-    "vue",
-    "svelte",
+    -- "vue",
+    -- "svelte",
     -- 'templ',
   },
   settings = {
