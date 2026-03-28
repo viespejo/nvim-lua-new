@@ -416,13 +416,17 @@ function M.config()
         },
         tools = {
           groups = {
-            ["neovim_files"] = {
-              description = "Tools related to creating, reading and editing files using Neovim mcp server",
+            ["agentic"] = {
+              description = "Agentic tools that can perform actions autonomously",
               prompt = "I'm giving you access to ${tools} to help you perform file operations",
               tools = {
-                "neovim__write_file",
-                "neovim__edit_file",
-                "neovim__read_multiple_files",
+                "cmd_runner",
+                "create_file",
+                "delete_file",
+                "file_search",
+                "grep_search",
+                "insert_edit_into_file",
+                "read_file",
               },
               opts = {
                 collapse_tools = false,
@@ -497,6 +501,7 @@ function M.config()
     prompt_library = {
       markdown = {
         dirs = {
+          vim.fn.expand("~/.codecompanion/prompts"),
           vim.fn.getcwd() .. "/.codecompanion/prompts", -- Can be relative
           vim.fn.stdpath("config") .. "/lua/codecompanion/prompts",
         },
