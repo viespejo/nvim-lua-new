@@ -289,6 +289,29 @@ function M.config()
             },
           })
         end,
+        cc_cliproxyapi = function()
+          local adapter = require("codecompanion.adapters").extend("openai", {
+            formatted_name = "Claude Cliproxy API",
+            url = "http://localhost:8317/v1/chat/completions",
+            env = {
+              api_key = "sk-PTPscQY8WNXtrueqxBSnvysO9JXq24ELv2V2qA4gqDg8l",
+            },
+          })
+
+          adapter.schema.model.default = "claude-sonnet-4-6"
+          adapter.schema.model.choices = {
+            ["claude-opus-4-6"] = {
+              formatted_name = "Claude Opus 4.6",
+              opts = { can_reason = true, has_vision = true },
+            },
+            ["claude-sonnet-4-6"] = {
+              formatted_name = "Claude Sonnet 4.6",
+              opts = { can_reason = true, has_vision = true },
+            },
+          }
+
+          return adapter
+        end,
       },
       acp = {
         opts = {
