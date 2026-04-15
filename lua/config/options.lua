@@ -46,7 +46,7 @@ vim.opt.listchars = { -- strings to use in list mode
 vim.opt.shortmess:append("c") -- default vertical split for diff mode
 vim.opt.diffopt:append("vertical") -- default vertical split for diff mode
 vim.opt.spelllang = "en_us" -- set spell language
-vim.opt.spell = true -- enable spell checking
+vim.opt.spell = false -- enable spell checking
 
 vim.g.mapleader = ","
 vim.opt.clipboard = "unnamedplus" -- allows neovim to access the system clipboard
