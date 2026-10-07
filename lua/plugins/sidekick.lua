@@ -12,6 +12,8 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
+local pi_editor = vim.env.PI_EDITOR or "/home/its32ve1/code/pi-config/scripts/pi-editor"
+
 return {
   "folke/sidekick.nvim",
   opts = {
@@ -19,15 +21,22 @@ return {
       mux = {
         enabled = true,
         backend = "tmux",
-        -- create = "split",
-        -- split = {
-        --   vertical = true, -- vertical or horizontal split
-        --   size = 0.6, -- size of the split (0-1 for percentage)
-        -- },
+        create = "terminal", -- "terminal", "window", "split"
+        split = {
+          vertical = true, -- vertical or horizontal split
+          size = 0.6, -- size of the split (0-1 for percentage)
+        },
       },
       win = {
         keys = {
-          -- prompt = false,
+          buffers = false,
+          files = false,
+          hide_n = { "q", "hide", mode = "n", desc = "hide the terminal window" },
+          hide_ctrl_q = false,
+          hide_ctrl_dot = false,
+          hide_ctrl_z = false,
+          prompt = false,
+          stopinsert = false,
         },
         split = {
           width = 0.6,
@@ -42,9 +51,26 @@ return {
         pi = {
           cmd = { "pi" },
           env = {
-            EDITOR = "/home/its32ve1/code/pi-config/scripts/pi-editor-context",
-            VISUAL = "/home/its32ve1/code/pi-config/scripts/pi-editor-context",
-            PI_EDITOR_OPEN_MODE = "nvim",
+            EDITOR = pi_editor,
+            VISUAL = pi_editor,
+            PI_EDITOR_OWNER_PANE = vim.env.TMUX_PANE or "",
+            PI_EDITOR_OWNER_KEY = tostring(vim.g.pi_editor_owner_key or ""),
+            PI_EDITOR_OPEN_MODE = "auto", -- options: "auto", "nvr", "nvim" default to "auto"
+            -- PI_GOOGLE_USER_AGENT="GeminiCLI/0.35.3/gemini-3.1-pro-preview (linux; x64; terminal) google-api-nodejs-client/9.15.1"
+            -- HTTP_PROXY = "http://127.0.0.1:4141",
+            -- HTTPS_PROXY = "http://127.0.0.1:4141",
+            -- NODE_TLS_REJECT_UNAUTHORIZED = 0,
+            -- PI_EDITOR_DEBUG = "1",
+          },
+        },
+        claude = {
+          cmd = { "claude" },
+          env = {
+            EDITOR = pi_editor,
+            VISUAL = pi_editor,
+            PI_EDITOR_OWNER_PANE = vim.env.TMUX_PANE or "",
+            PI_EDITOR_OWNER_KEY = tostring(vim.g.pi_editor_owner_key or ""),
+            PI_EDITOR_OPEN_MODE = "auto",
           },
         },
       },
@@ -60,13 +86,16 @@ return {
         require("sidekick.cli").toggle()
       end,
       desc = "Sidekick Toggle",
-      mode = { "n", "t", "x" },
+      mode = { "n", "t" },
     },
     {
       "<leader>ss",
       function()
-        require("sidekick.cli").select()
+        vim.schedule(function()
+          require("sidekick.cli").select()
+        end)
       end,
+      mode = { "n", "t" },
       -- Or to select only installed tools:
       -- require("sidekick.cli").select({ filter = { installed = true } })
       desc = "Select CLI",
@@ -102,12 +131,26 @@ return {
       desc = "Send Visual Selection",
     },
     {
-      "<leader>sp",
+      "<leader>si",
       function()
         require("sidekick.cli").prompt()
       end,
       mode = { "n", "x" },
       desc = "Sidekick Select Prompt",
+    },
+    {
+      "<leader>sc",
+      function()
+        require("sidekick.cli").toggle({ name = "claude", focus = true })
+      end,
+      desc = "Sidekick Toggle Claude",
+    },
+    {
+      "<leader>sp",
+      function()
+        require("sidekick.cli").toggle({ name = "pi", focus = true })
+      end,
+      desc = "Sidekick Toggle Pi",
     },
   },
 }
