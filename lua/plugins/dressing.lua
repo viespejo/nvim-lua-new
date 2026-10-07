@@ -52,6 +52,13 @@ return {
         -- Priority list of preferred vim.select implementations
         backend = { "fzf_lua", "builtin" },
 
+        get_config = function(opts)
+          if opts and opts.kind == "sidekick_cli" then
+            return {
+              backend = { "builtin" },
+            }
+          end
+        end,
         -- Trim trailing `:` from prompt
         trim_prompt = true,
 
