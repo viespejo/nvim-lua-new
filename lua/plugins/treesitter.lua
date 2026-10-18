@@ -1,11 +1,13 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "master",
     event = "VeryLazy",
     dependencies = {
       {
         -- "nvim-treesitter/playground",
         "nvim-treesitter/nvim-treesitter-textobjects",
+        branch = "master",
       },
     },
     config = function()
