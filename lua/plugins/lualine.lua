@@ -103,7 +103,6 @@ function M.config()
         "encoding",
         { "fileformat", icons_enabled = false },
         filetype,
-        require("plugins.lualine-components.codecompanion"),
       },
       lualine_y = { "progress" },
       lualine_z = { "location" },
