@@ -12,7 +12,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
-local pi_editor = vim.env.PI_EDITOR or "/home/its32ve1/code/pi-config/scripts/pi-editor"
+local pi_editor = vim.env.PI_EDITOR or "pi-editor"
 
 return {
   "folke/sidekick.nvim",
@@ -56,6 +56,10 @@ return {
             PI_EDITOR_OWNER_PANE = vim.env.TMUX_PANE or "",
             PI_EDITOR_OWNER_KEY = tostring(vim.g.pi_editor_owner_key or ""),
             PI_EDITOR_OPEN_MODE = "auto", -- options: "auto", "nvr", "nvim" default to "auto"
+            VERTEXAI_PROJECT = vim.env.VERTEXAI_PROJECT or false,
+            VERTEXAI_LOCATION = vim.env.VERTEXAI_LOCATION or false,
+            GOOGLE_CLOUD_PROJECT = vim.env.GOOGLE_CLOUD_PROJECT or false,
+            GOOGLE_CLOUD_LOCATION = vim.env.GOOGLE_CLOUD_LOCATION or false,
             -- PI_GOOGLE_USER_AGENT="GeminiCLI/0.35.3/gemini-3.1-pro-preview (linux; x64; terminal) google-api-nodejs-client/9.15.1"
             -- HTTP_PROXY = "http://127.0.0.1:4141",
             -- HTTPS_PROXY = "http://127.0.0.1:4141",
