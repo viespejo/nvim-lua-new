@@ -44,6 +44,7 @@ end
 local vertex_keys = { "VERTEXAI_PROJECT", "VERTEXAI_LOCATION", "GOOGLE_CLOUD_PROJECT", "GOOGLE_CLOUD_LOCATION" }
 for _, fixture in ipairs({
   {},
+  { VERTEXAI_PROJECT = "fixture-partial-project" },
   {
     VERTEXAI_PROJECT = "fixture-vertex-project",
     VERTEXAI_LOCATION = "fixture-vertex-region",
@@ -53,7 +54,8 @@ for _, fixture in ipairs({
 }) do
   local spec = load_spec(nil, fixture)
   for _, key in ipairs(vertex_keys) do
-    assert(spec.opts.cli.tools.pi.env[key] == (fixture[key] or false), "Forward or unset " .. key)
+    assert(spec.opts.cli.tools.pi.env[key] == (fixture[key] or ""), "Forward or clear " .. key)
+    assert(type(spec.opts.cli.tools.pi.env[key]) == "string", "Avoid unsupported tmux unset flag for " .. key)
     assert(spec.opts.cli.tools.claude.env[key] == nil, "Do not change the unrelated Claude environment")
   end
   cases = cases + 1
