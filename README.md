@@ -26,6 +26,21 @@
 
 ---
 
+## Optional MirrorOS highlights
+
+After each colorscheme load, Neovim optionally applies the reviewed highlights from
+`/usr/share/mirroros/themes/default/neovim.lua`. Tokyo Night remains the selected scheme; `CursorLineNr`
+and FZF are not changed by this integration. If the file is missing, nothing happens. An untrusted path,
+invalid file or execution error produces a warning without preventing editor startup. Every path component
+must be root-owned, not group- or world-writable, and not a symbolic link; the file is read from the verified
+open descriptor. This protects against ordinary-user changes, not concurrent privileged modifications.
+
+The isolated integration test requires no plugins:
+
+```sh
+nvim --headless -u NONE -i NONE -n -l tests/mirroros-theme.test.lua
+```
+
 ## Explicit editor-tool preparation
 
 This candidate requires Neovim 0.12 or later. Treesitter and textobjects use their

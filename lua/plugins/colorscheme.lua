@@ -34,6 +34,7 @@ return {
         end,
       })
 
+      require("config.mirroros_theme").setup()
       vim.cmd.colorscheme("tokyonight")
     end,
   },
