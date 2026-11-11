@@ -1,6 +1,6 @@
 return {
   "andymass/vim-matchup",
-  event = "VeryLazy",
+  lazy = false,
   config = function()
     -- vim.g.matchup_enabled = 0
     vim.g.matchup_matchparen_offscreen = { method = "status" }
